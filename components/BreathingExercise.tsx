@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Play, Square, Volume2, VolumeX } from 'lucide-react';
 import { BreathingPhase } from '../types';
-import { BREATHING_DURATION_MS } from '../constants';
 
 const BreathingExercise: React.FC = () => {
   const [isActive, setIsActive] = useState(false);
@@ -69,13 +68,13 @@ const BreathingExercise: React.FC = () => {
         setPhase(p => {
           switch (p) {
             case BreathingPhase.Idle:
-              playTone(180, 'sine', 0.15); // Inhale tone (warm low)
+              playTone(180, 'sine', 0.15); // Inhale tone (rising feeling could be nice, keeping warm low)
               return BreathingPhase.Inhale;
             case BreathingPhase.Inhale:
-              playTone(220, 'sine', 0.1); // Hold tone (steady)
+              playTone(220, 'sine', 0.1); // Hold tone
               return BreathingPhase.HoldFull;
             case BreathingPhase.HoldFull:
-              playTone(160, 'sine', 0.15); // Exhale tone (relaxing drop)
+              playTone(160, 'sine', 0.15); // Exhale tone
               return BreathingPhase.Exhale;
             case BreathingPhase.Exhale:
               // Silence for empty hold, or very faint rumble
@@ -111,7 +110,7 @@ const BreathingExercise: React.FC = () => {
     }
 
     return () => clearInterval(interval);
-  }, [isActive, cleanupAudio, playTone, phase]); // Added phase to deps to allow correct tone triggering on change
+  }, [isActive, cleanupAudio, playTone, phase]);
 
   const toggleExercise = () => {
     if (!isActive) {
@@ -120,44 +119,79 @@ const BreathingExercise: React.FC = () => {
     setIsActive(!isActive);
   };
 
-  // Visual Styling based on Phase
-  const getCircleStyles = () => {
-    const base = "w-48 h-48 rounded-full border-2 border-stone-400 transition-all duration-[4000ms] ease-in-out flex items-center justify-center relative";
-    switch (phase) {
-      case BreathingPhase.Inhale:
-        return `${base} scale-125 bg-stone-200/50 border-stone-600`;
-      case BreathingPhase.HoldFull:
-        return `${base} scale-125 bg-stone-300/50 border-stone-800`;
-      case BreathingPhase.Exhale:
-        return `${base} scale-100 bg-transparent border-stone-400`;
-      case BreathingPhase.HoldEmpty:
-        return `${base} scale-100 bg-transparent border-stone-300`;
-      default:
-        return `${base} scale-100 bg-transparent border-stone-300`;
-    }
-  };
-
   const getInstruction = () => {
     switch (phase) {
       case BreathingPhase.Inhale: return "Breathe In";
       case BreathingPhase.HoldFull: return "Hold";
       case BreathingPhase.Exhale: return "Breathe Out";
-      case BreathingPhase.HoldEmpty: return "Rest";
+      case BreathingPhase.HoldEmpty: return "Hold";
       default: return "Ready?";
     }
   };
 
+  // Box Animation Helpers
+  // Box is w-64 (256px). Dot is w-4 (16px). Max travel 240px.
+  // Origin (0,0) is Top-Left visually, but we want path: Bottom-Left -> Top-Left -> Top-Right -> Bottom-Right -> Bottom-Left
+  
+  const getDotTransform = () => {
+    // BL: x=0, y=240
+    // TL: x=0, y=0
+    // TR: x=240, y=0
+    // BR: x=240, y=240
+
+    switch (phase) {
+      case BreathingPhase.Idle: return 'translate-x-0 translate-y-[240px]'; // Start at bottom left
+      case BreathingPhase.Inhale: return 'translate-x-0 translate-y-0'; // Move Up
+      case BreathingPhase.HoldFull: return 'translate-x-[240px] translate-y-0'; // Move Right
+      case BreathingPhase.Exhale: return 'translate-x-[240px] translate-y-[240px]'; // Move Down
+      case BreathingPhase.HoldEmpty: return 'translate-x-0 translate-y-[240px]'; // Move Left
+      default: return 'translate-x-0 translate-y-[240px]';
+    }
+  };
+
+  const getInnerCircleStyle = () => {
+    // Expands on Inhale, Stays on HoldFull, Shrinks on Exhale, Stays on HoldEmpty
+    const base = "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-[4000ms] linear bg-stone-200/50";
+    
+    switch (phase) {
+      case BreathingPhase.Inhale:
+      case BreathingPhase.HoldFull:
+        return `${base} w-48 h-48 opacity-100`;
+      case BreathingPhase.Exhale:
+      case BreathingPhase.HoldEmpty:
+        return `${base} w-12 h-12 opacity-60`;
+      default:
+        return `${base} w-12 h-12 opacity-50`;
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center py-16 space-y-8">
-      <div className="relative">
-         {/* Visual Circle */}
-         <div className={getCircleStyles()}>
-            <span className="text-stone-600 font-serif text-xl tracking-widest">
-              {isActive ? getInstruction() : "Breathe"}
-            </span>
-         </div>
+    <div className="flex flex-col items-center justify-center py-16 space-y-12">
+      
+      {/* Visual Box Container */}
+      <div className="relative w-64 h-64">
+        {/* Track Outline */}
+        <div className="absolute inset-0 border-2 border-stone-200 rounded-2xl" />
+
+        {/* Inner Expanding Breath */}
+        <div className={getInnerCircleStyle()} />
+
+        {/* Text Center */}
+        <div className="absolute inset-0 flex items-center justify-center z-10">
+          <span className="text-stone-600 font-serif text-xl tracking-widest bg-paper/50 px-2 py-1 rounded backdrop-blur-[2px]">
+            {isActive ? getInstruction() : "Breathe"}
+          </span>
+        </div>
+
+        {/* Moving Dot */}
+        {/* We use a container for the dot to handle the transform positioning absolute to the box */}
+        <div 
+          className={`absolute top-0 left-0 w-4 h-4 bg-stone-600 rounded-full shadow-sm z-20 transition-transform ${isActive ? 'duration-[4000ms] linear' : 'duration-500 ease-out'}`}
+          style={{ transform: getDotTransform() }}
+        />
       </div>
 
+      {/* Controls */}
       <div className="flex items-center gap-4">
         <button
           onClick={toggleExercise}
@@ -177,7 +211,7 @@ const BreathingExercise: React.FC = () => {
       </div>
 
       <p className="text-stone-400 text-xs tracking-widest uppercase">
-        4s In • 4s Hold • 4s Out • 4s Rest
+        4s In • 4s Hold • 4s Out • 4s Hold
       </p>
     </div>
   );
