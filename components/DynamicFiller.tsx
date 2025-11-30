@@ -40,49 +40,56 @@ const DynamicFiller: React.FC = () => {
 
     if (index < FILLERS.length - 1) {
       const interval = setInterval(() => {
-        // Fade out
+        // Start fade out
         setFadeOpacity(0);
         
         setTimeout(() => {
           setIndex((prev) => prev + 1);
-          // Fade in
+          // Start fade in
           setFadeOpacity(1);
-        }, 300); // Wait for fade out to finish before switching text
+        }, 500); // Wait for half the transition time
 
-      }, 1500); // Total time per word
+      }, 2000); // Total time per word (slower for readability)
       
       return () => clearInterval(interval);
     } else {
-      // End state
+      // End state sequence
       const timer = setTimeout(() => {
         setIsDone(true);
-      }, 500);
+      }, 1000);
       return () => clearTimeout(timer);
     }
   }, [hasStarted, index]);
 
   return (
-    <div ref={containerRef} className="flex flex-col items-center justify-center gap-12 min-h-[40vh] py-20">
+    <div ref={containerRef} className="flex flex-col items-center justify-center gap-16 min-h-[50vh] py-20">
       <p className="font-serif text-3xl md:text-5xl text-stone-800 text-center leading-tight">
         If you can{' '}
-        <span className="inline-block relative min-w-[200px] text-stone-600">
-           <span 
-             className="italic border-b-2 border-stone-200 pb-2 transition-opacity duration-300 block"
-             style={{ opacity: fadeOpacity }}
-           >
-             {FILLERS[index]}
-           </span>
+        <span className="inline-grid place-items-center">
+             {/* Using a grid to stack allows smoother layout but for now we just fade text */}
+             <span 
+               className="italic border-b border-stone-200 pb-2 transition-all duration-700 ease-in-out block text-stone-600"
+               style={{ 
+                 opacity: fadeOpacity, 
+                 transform: fadeOpacity === 0 ? 'translateY(10px)' : 'translateY(0)',
+                 filter: fadeOpacity === 0 ? 'blur(4px)' : 'blur(0)'
+               }}
+             >
+               {FILLERS[index]}
+             </span>
         </span>
         .
       </p>
       
-      <p 
-        className={`font-serif text-2xl md:text-4xl text-stone-500 text-center transition-all duration-[2000ms] ease-out transform ${
-          isDone ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`}
-      >
-        If you can do nothing,<br/> then that is ok as well.
-      </p>
+      <div className="h-24 flex items-center justify-center">
+        <p 
+          className={`font-serif text-2xl md:text-4xl text-stone-500 text-center transition-all duration-[2500ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] transform ${
+            isDone ? 'opacity-100 translate-y-0 blur-0' : 'opacity-0 translate-y-8 blur-sm'
+          }`}
+        >
+          If you can do nothing,<br/> then that is ok as well.
+        </p>
+      </div>
     </div>
   );
 };

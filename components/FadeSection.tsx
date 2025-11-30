@@ -12,7 +12,7 @@ const FadeSection: React.FC<FadeSectionProps> = ({
   children, 
   delay = 0, 
   className = '',
-  threshold = 0.1
+  threshold = 0.2
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const domRef = useRef<HTMLDivElement>(null);
@@ -27,8 +27,7 @@ const FadeSection: React.FC<FadeSectionProps> = ({
       });
     }, { 
       threshold: threshold,
-      // Trigger a bit earlier so it feels like it's waiting for you
-      rootMargin: '0px 0px -50px 0px' 
+      rootMargin: '0px 0px -10% 0px' // Wait until element is a bit further up
     });
 
     const currentElement = domRef.current;
@@ -46,11 +45,12 @@ const FadeSection: React.FC<FadeSectionProps> = ({
   return (
     <div
       ref={domRef}
-      // using a custom cubic bezier for a very gentle "settling" effect
-      className={`transition-all duration-[1500ms] ease-[cubic-bezier(0.22,1,0.36,1)] transform ${
+      // Increased duration to 2000ms and added blur transition
+      // cubic-bezier(0.2, 0.8, 0.2, 1) is a very soft "ease-out"
+      className={`transition-all duration-[2000ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] will-change-[opacity,transform] ${
         isVisible 
           ? 'opacity-100 translate-y-0 blur-0' 
-          : 'opacity-0 translate-y-8 blur-sm'
+          : 'opacity-0 translate-y-12 blur-md'
       } ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
     >

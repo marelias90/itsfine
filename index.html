@@ -31,6 +31,14 @@
             },
             animation: {
               'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'jaw-release': 'jawRelease 6s ease-in-out infinite',
+            },
+            keyframes: {
+              jawRelease: {
+                '0%, 15%': { transform: 'translateY(0)' },
+                '45%, 85%': { transform: 'translateY(24px)' },
+                '100%': { transform: 'translateY(0)' }
+              }
             }
           },
         },
