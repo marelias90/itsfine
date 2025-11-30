@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { Share2, Heart } from 'lucide-react';
 import FadeSection from './components/FadeSection';
 import BreathingExercise from './components/BreathingExercise';
-import PersonalNote from './components/PersonalNote';
+import DynamicFiller from './components/DynamicFiller';
 import { PROMPTS } from './constants';
 
 const App: React.FC = () => {
@@ -64,7 +65,7 @@ const App: React.FC = () => {
         {/* Narrative Flow */}
         <FadeSection className="max-w-xl mx-auto text-center space-y-6">
           <p className="font-serif text-xl md:text-2xl text-stone-600 leading-relaxed">
-            I know the weight feels heavy right now.
+            The weight might feel heavy right now.
           </p>
           <p className="font-serif text-xl md:text-2xl text-stone-600 leading-relaxed">
              Like everything is asking too much of you.
@@ -83,6 +84,11 @@ const App: React.FC = () => {
             </FadeSection>
           ))}
         </div>
+
+        {/* Dynamic Action Filler */}
+        <FadeSection>
+          <DynamicFiller />
+        </FadeSection>
 
         {/* Breathing Exercise Break */}
         <FadeSection>
@@ -104,17 +110,8 @@ const App: React.FC = () => {
           </p>
         </FadeSection>
 
-        {/* Gemini Personalized Note */}
-        <FadeSection>
-          <PersonalNote />
-        </FadeSection>
-
         {/* Footer / CTA */}
         <footer className="pt-20 pb-12 flex flex-col items-center gap-8 border-t border-stone-200/50">
-          <p className="font-serif text-stone-500 italic">
-            You are loved. You are needed.
-          </p>
-          
           <button
             onClick={handleShare}
             className="group flex items-center gap-2 px-6 py-3 bg-stone-100 hover:bg-stone-200 text-stone-600 rounded-full transition-all text-sm tracking-wide"
