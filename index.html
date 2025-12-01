@@ -31,13 +31,37 @@
             },
             animation: {
               'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-              'jaw-release': 'jawRelease 6s ease-in-out infinite',
+              'jaw-drop': 'jawDrop 4s ease-in-out infinite',
+              'shoulder-drop': 'shoulderDrop 6s ease-in-out infinite',
+              'arch-relax': 'archRelax 4s ease-in-out infinite',
+              'squeeze-shake': 'squeezeShake 4s ease-in-out infinite',
             },
             keyframes: {
-              jawRelease: {
-                '0%, 15%': { transform: 'translateY(0)' },
-                '45%, 85%': { transform: 'translateY(24px)' },
-                '100%': { transform: 'translateY(0)' }
+              jawDrop: {
+                '0%, 20%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(24px)' },
+                '80%, 100%': { transform: 'translateY(0)' }
+              },
+              shoulderDrop: {
+                '0%, 15%': { transform: 'translateY(-24px)' }, /* Tensed / Up high */
+                '40%': { transform: 'translateY(0)' }, /* Relaxed / Down */
+                '85%': { transform: 'translateY(0)' }, /* Stay Down */
+                '100%': { transform: 'translateY(-24px)' } /* Loop back to tense */
+              },
+              archRelax: {
+                '0%, 20%': { transform: 'scaleY(1) translateY(0)' }, 
+                '50%': { transform: 'scaleY(0.1) translateY(10px)' }, 
+                '80%, 100%': { transform: 'scaleY(1) translateY(0)' }
+              },
+              squeezeShake: {
+                '0%, 10%': { transform: 'scale(1)' },
+                '20%': { transform: 'scale(0.7)' },
+                '25%': { transform: 'scale(0.7) rotate(-2deg)' },
+                '30%': { transform: 'scale(0.7) rotate(2deg)' },
+                '35%': { transform: 'scale(0.7) rotate(-2deg)' },
+                '40%': { transform: 'scale(0.7) rotate(0)' },
+                '55%': { transform: 'scale(1.1)' },
+                '70%, 100%': { transform: 'scale(1)' }
               }
             }
           },
@@ -60,6 +84,13 @@
       ::-webkit-scrollbar-thumb {
         background-color: #e7e5e4;
         border-radius: 20px;
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
       }
     </style>
   <script type="importmap">
