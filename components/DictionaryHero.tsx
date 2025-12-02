@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowDown } from 'lucide-react';
 import FadeSection from './FadeSection';
+import ScrollIndicator from './ScrollIndicator';
 
 const DictionaryHero: React.FC = () => {
   const [isMe, setIsMe] = useState(false);
@@ -76,10 +76,7 @@ const DictionaryHero: React.FC = () => {
         </div>
       </div>
 
-      {/* Scroll Indicator */}
-      <div className={`absolute bottom-12 text-stone-300 transition-opacity duration-1000 ${showDefinition ? 'opacity-100' : 'opacity-0'}`}>
-         <ArrowDown size={24} className="animate-bounce" />
-      </div>
+      <ScrollIndicator delay={4500} />
     </section>
   );
 };

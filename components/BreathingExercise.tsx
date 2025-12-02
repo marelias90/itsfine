@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Play, Square, Volume2, VolumeX } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { BreathingPhase } from '../types';
 
 const BreathingExercise: React.FC = () => {
   const [isActive, setIsActive] = useState(false);
+  const [isCountingDown, setIsCountingDown] = useState(false);
+  const [count, setCount] = useState(5);
   const [phase, setPhase] = useState<BreathingPhase>(BreathingPhase.Idle);
-  const [timeLeft, setTimeLeft] = useState(4);
   const [isMuted, setIsMuted] = useState(false);
   
-  // Audio Context Refs
+  // Audio Refs
   const audioContextRef = useRef<AudioContext | null>(null);
   const oscRef = useRef<OscillatorNode | null>(null);
-  const gainRef = useRef<GainNode | null>(null);
 
   const cleanupAudio = useCallback(() => {
     if (oscRef.current) {
@@ -27,16 +28,13 @@ const BreathingExercise: React.FC = () => {
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
     }
-    
     if (audioContextRef.current.state === 'suspended') {
       audioContextRef.current.resume();
     }
   }, []);
 
-  const playTone = useCallback((freq: number, type: 'sine' | 'triangle', volume: number) => {
+  const playTone = useCallback((freq: number, type: 'sine' | 'triangle', volume: number, duration: number = 4) => {
     if (isMuted || !audioContextRef.current) return;
-
-    // Stop previous
     cleanupAudio();
 
     const ctx = audioContextRef.current;
@@ -46,173 +44,223 @@ const BreathingExercise: React.FC = () => {
     osc.type = type;
     osc.frequency.setValueAtTime(freq, ctx.currentTime);
     
-    // Smooth attack and release
+    // Very soft attack and long release for organic feel
     gain.gain.setValueAtTime(0, ctx.currentTime);
     gain.gain.linearRampToValueAtTime(volume, ctx.currentTime + 1);
-    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 3.8); // Fade out just before end
+    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration - 0.2); 
 
     osc.connect(gain);
     gain.connect(ctx.destination);
     
     osc.start();
     oscRef.current = osc;
-    gainRef.current = gain;
   }, [cleanupAudio, isMuted]);
 
+  // Countdown Logic
   useEffect(() => {
-    let interval: any;
-    
+    let timer: any;
+    if (isCountingDown && count > 0) {
+      timer = setTimeout(() => setCount(c => c - 1), 1000);
+    } else if (isCountingDown && count === 0) {
+      setIsCountingDown(false);
+      setIsActive(true);
+      setPhase(BreathingPhase.Inhale); // Start immediately
+    }
+    return () => clearTimeout(timer);
+  }, [isCountingDown, count]);
+
+  // Breathing Cycle Logic
+  useEffect(() => {
+    let timer: any;
+
     if (isActive) {
-      // Logic to cycle through phases
-      const runCycle = () => {
-        setPhase(p => {
-          switch (p) {
-            case BreathingPhase.Idle:
-              playTone(180, 'sine', 0.15); // Inhale tone (rising feeling could be nice, keeping warm low)
-              return BreathingPhase.Inhale;
-            case BreathingPhase.Inhale:
-              playTone(220, 'sine', 0.1); // Hold tone
-              return BreathingPhase.HoldFull;
-            case BreathingPhase.HoldFull:
-              playTone(160, 'sine', 0.15); // Exhale tone
-              return BreathingPhase.Exhale;
-            case BreathingPhase.Exhale:
-              // Silence for empty hold, or very faint rumble
-              return BreathingPhase.HoldEmpty;
-            case BreathingPhase.HoldEmpty:
-              playTone(180, 'sine', 0.15); // Loop back to inhale
-              return BreathingPhase.Inhale;
-            default:
-              return BreathingPhase.Idle;
-          }
-        });
-        setTimeLeft(4);
+      const runPhase = () => {
+        // Durations are all 4000ms
+        switch (phase) {
+          case BreathingPhase.Inhale:
+            playTone(160, 'sine', 0.2); 
+            timer = setTimeout(() => setPhase(BreathingPhase.HoldFull), 4000);
+            break;
+          case BreathingPhase.HoldFull:
+            // Silence during hold
+            // playTone(180, 'sine', 0.1); // Removed as requested
+            timer = setTimeout(() => setPhase(BreathingPhase.Exhale), 4000);
+            break;
+          case BreathingPhase.Exhale:
+            playTone(140, 'sine', 0.2);
+            timer = setTimeout(() => setPhase(BreathingPhase.HoldEmpty), 4000);
+            break;
+          case BreathingPhase.HoldEmpty:
+            // Silence during hold
+            timer = setTimeout(() => setPhase(BreathingPhase.Inhale), 4000);
+            break;
+        }
       };
-
-      // Initial start
-      if (phase === BreathingPhase.Idle) {
-        runCycle();
-      }
-
-      interval = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-             runCycle();
-             return 4;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+      runPhase();
     } else {
       setPhase(BreathingPhase.Idle);
-      setTimeLeft(4);
       cleanupAudio();
     }
 
-    return () => clearInterval(interval);
-  }, [isActive, cleanupAudio, playTone, phase]);
+    return () => clearTimeout(timer);
+  }, [isActive, phase, playTone, cleanupAudio]);
 
-  const toggleExercise = () => {
-    if (!isActive) {
-      initAudio();
-    }
-    setIsActive(!isActive);
+  const handleStart = () => {
+    initAudio();
+    setCount(5);
+    setIsCountingDown(true);
+  };
+
+  const handleStop = () => {
+    setIsActive(false);
+    setIsCountingDown(false);
+    setCount(5);
+    cleanupAudio();
   };
 
   const getInstruction = () => {
+    if (isCountingDown) return "Relax...";
+    if (!isActive) return "Breathe";
     switch (phase) {
       case BreathingPhase.Inhale: return "Breathe In";
       case BreathingPhase.HoldFull: return "Hold";
       case BreathingPhase.Exhale: return "Breathe Out";
       case BreathingPhase.HoldEmpty: return "Hold";
-      default: return "Ready?";
+      default: return "Breathe";
     }
   };
 
-  // Box Animation Helpers
-  // Box is w-64 (256px). Dot is w-4 (16px). Max travel 240px.
-  // Origin (0,0) is Top-Left visually, but we want path: Bottom-Left -> Top-Left -> Top-Right -> Bottom-Right -> Bottom-Left
-  
-  const getDotTransform = () => {
-    // BL: x=0, y=240
-    // TL: x=0, y=0
-    // TR: x=240, y=0
-    // BR: x=240, y=240
-
-    switch (phase) {
-      case BreathingPhase.Idle: return 'translate-x-0 translate-y-[240px]'; // Start at bottom left
-      case BreathingPhase.Inhale: return 'translate-x-0 translate-y-0'; // Move Up
-      case BreathingPhase.HoldFull: return 'translate-x-[240px] translate-y-0'; // Move Right
-      case BreathingPhase.Exhale: return 'translate-x-[240px] translate-y-[240px]'; // Move Down
-      case BreathingPhase.HoldEmpty: return 'translate-x-0 translate-y-[240px]'; // Move Left
-      default: return 'translate-x-0 translate-y-[240px]';
-    }
-  };
-
-  const getInnerCircleStyle = () => {
-    // Expands on Inhale, Stays on HoldFull, Shrinks on Exhale, Stays on HoldEmpty
-    const base = "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-[4000ms] linear bg-stone-200/50";
-    
-    switch (phase) {
-      case BreathingPhase.Inhale:
-      case BreathingPhase.HoldFull:
-        return `${base} w-48 h-48 opacity-100`;
-      case BreathingPhase.Exhale:
-      case BreathingPhase.HoldEmpty:
-        return `${base} w-12 h-12 opacity-60`;
-      default:
-        return `${base} w-12 h-12 opacity-50`;
+  // Animation Variants
+  const lungVariants = {
+    [BreathingPhase.Idle]: { scale: 1, opacity: 0.8 },
+    [BreathingPhase.Inhale]: { 
+      scale: 1.5, 
+      opacity: 1,
+      transition: { duration: 4, ease: "easeInOut" } 
+    },
+    [BreathingPhase.HoldFull]: { 
+      scale: 1.55, 
+      opacity: 0.9,
+      transition: { duration: 2, repeat: Infinity, repeatType: "mirror" as const, ease: "easeInOut" } 
+    },
+    [BreathingPhase.Exhale]: { 
+      scale: 1, 
+      opacity: 0.8,
+      transition: { duration: 4, ease: "easeInOut" } 
+    },
+    [BreathingPhase.HoldEmpty]: { 
+      scale: 1, 
+      opacity: 0.6,
+      transition: { duration: 4, ease: "linear" } 
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center py-16 space-y-12">
+    <div className="flex flex-col items-center justify-center py-12 relative w-full">
       
-      {/* Visual Box Container */}
-      <div className="relative w-64 h-64">
-        {/* Track Outline */}
-        <div className="absolute inset-0 border-2 border-stone-200 rounded-2xl" />
+      {/* Top Label */}
+      <h4 className="font-sans text-[10px] md:text-xs font-medium tracking-[0.25em] text-stone-500/50 mb-16 uppercase select-none">
+        Box Breathing
+      </h4>
 
-        {/* Inner Expanding Breath */}
-        <div className={getInnerCircleStyle()} />
+      {/* Main Graphic Area */}
+      <div className="relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center mb-12">
+        
+        {/* Countdown Overlay */}
+        <AnimatePresence>
+          {isCountingDown && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.5 }}
+              key="countdown"
+              className="absolute z-20 font-serif text-8xl text-stone-700/80"
+            >
+              {count}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Text Center */}
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <span className="text-stone-600 font-serif text-xl tracking-widest bg-paper/50 px-2 py-1 rounded backdrop-blur-[2px]">
-            {isActive ? getInstruction() : "Breathe"}
-          </span>
+        {/* The "Lungs" - Organic Shapes */}
+        <div className="absolute inset-0 flex items-center justify-center">
+            {/* Left Lobe */}
+            <motion.div
+              variants={lungVariants}
+              animate={isActive ? phase : BreathingPhase.Idle}
+              className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-clay-400/30 blur-2xl absolute -translate-x-6 mix-blend-multiply"
+            />
+            {/* Right Lobe */}
+            <motion.div
+              variants={lungVariants}
+              animate={isActive ? phase : BreathingPhase.Idle}
+              className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-clay-500/30 blur-2xl absolute translate-x-6 mix-blend-multiply"
+            />
+            {/* Core Gradient Sphere for solidity */}
+            <motion.div
+               variants={lungVariants}
+               animate={isActive ? phase : BreathingPhase.Idle}
+               className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-clay-400 to-clay-300 opacity-80 blur-lg z-10"
+            />
         </div>
 
-        {/* Moving Dot */}
-        {/* We use a container for the dot to handle the transform positioning absolute to the box */}
-        <div 
-          className={`absolute top-0 left-0 w-4 h-4 bg-stone-600 rounded-full shadow-sm z-20 transition-transform ${isActive ? 'duration-[4000ms] linear' : 'duration-500 ease-out'}`}
-          style={{ transform: getDotTransform() }}
-        />
+        {/* Instruction Text - Only shows when active (not counting down) */}
+        <motion.div 
+          animate={{ opacity: isActive && !isCountingDown ? 1 : 0.5 }}
+          className="relative z-10 font-serif text-3xl md:text-4xl text-stone-600 tracking-wide pointer-events-none"
+        >
+          {!isCountingDown && getInstruction()}
+        </motion.div>
       </div>
 
-      {/* Controls */}
-      <div className="flex items-center gap-4">
-        <button
-          onClick={toggleExercise}
-          className="flex items-center gap-2 px-6 py-2 bg-stone-800 text-stone-50 rounded-full hover:bg-stone-700 transition-colors font-sans text-sm tracking-wide"
-        >
-          {isActive ? <Square size={14} /> : <Play size={14} />}
-          {isActive ? "Stop" : "Start Exercise"}
-        </button>
+      {/* Controls Container */}
+      <div className="flex flex-col items-center gap-8 z-20">
+        
+        <div className="flex items-center gap-4">
+           {/* Primary Button */}
+           <AnimatePresence mode="wait">
+             {!isActive && !isCountingDown ? (
+               <motion.button
+                 key="start"
+                 initial={{ opacity: 0, y: 10 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 exit={{ opacity: 0, y: -10 }}
+                 onClick={handleStart}
+                 className="flex items-center gap-3 px-8 py-3 bg-clay-500 hover:bg-clay-600 text-white rounded-full shadow-sm hover:shadow-md transition-all duration-300 font-sans text-sm font-medium tracking-wide"
+               >
+                 <Play size={14} fill="currentColor" />
+                 Start Exercise
+               </motion.button>
+             ) : (
+               <motion.button
+                 key="stop"
+                 initial={{ opacity: 0, y: 10 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 exit={{ opacity: 0, y: -10 }}
+                 onClick={handleStop}
+                 className="flex items-center gap-3 px-8 py-3 bg-stone-200 hover:bg-stone-300 text-stone-600 rounded-full transition-all duration-300 font-sans text-sm font-medium tracking-wide"
+               >
+                 <Square size={14} fill="currentColor" />
+                 Stop
+               </motion.button>
+             )}
+           </AnimatePresence>
 
-        <button
-          onClick={() => setIsMuted(!isMuted)}
-          className="p-2 text-stone-500 hover:text-stone-800 transition-colors"
-          title={isMuted ? "Unmute" : "Mute"}
-        >
-          {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-        </button>
+           {/* Mute Toggle */}
+           <button
+             onClick={() => setIsMuted(!isMuted)}
+             className={`p-3 rounded-full transition-all duration-300 ${isMuted ? 'text-stone-300 hover:text-stone-500' : 'text-clay-500 hover:text-clay-600 bg-clay-50'}`}
+             title={isMuted ? "Unmute" : "Mute"}
+           >
+             {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+           </button>
+        </div>
+
+        {/* Footer Info */}
+        <div className="text-[10px] md:text-xs font-sans tracking-[0.2em] text-stone-400 uppercase">
+          4s In • 4s Hold • 4s Out • 4s Hold
+        </div>
       </div>
 
-      <p className="text-stone-400 text-xs tracking-widest uppercase">
-        4s In • 4s Hold • 4s Out • 4s Hold
-      </p>
     </div>
   );
 };

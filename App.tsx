@@ -6,7 +6,9 @@ import DynamicFiller from './components/DynamicFiller';
 import ScrollProgress from './components/ScrollProgress';
 import UnclenchSection from './components/UnclenchSection';
 import ShoulderSection from './components/ShoulderSection';
+import MomentSection from './components/MomentSection';
 import DictionaryHero from './components/DictionaryHero';
+import ScrollIndicator from './components/ScrollIndicator';
 import { PROMPTS } from './constants';
 
 const App: React.FC = () => {
@@ -67,11 +69,11 @@ const App: React.FC = () => {
         className="h-full w-full overflow-y-scroll snap-y snap-mandatory scroll-smooth no-scrollbar"
       >
         
-        {/* Dictionary Hero Section */}
+        {/* Dictionary Hero Section - Includes its own internal ScrollIndicator */}
         <DictionaryHero />
 
         {/* Narrative Flow */}
-        <section className="h-screen w-full flex flex-col items-center justify-center gap-6 snap-center shrink-0">
+        <section className="h-screen w-full flex flex-col items-center justify-center gap-6 snap-center shrink-0 relative">
             <FadeSection>
               <p className="font-serif text-4xl md:text-6xl text-stone-700 text-center leading-snug">
                 The weight might feel
@@ -82,9 +84,10 @@ const App: React.FC = () => {
                 heavy right now.
               </p>
             </FadeSection>
+            <ScrollIndicator delay={3000} />
         </section>
           
-        <section className="h-screen w-full flex flex-col items-center justify-center gap-6 snap-center shrink-0">
+        <section className="h-screen w-full flex flex-col items-center justify-center gap-6 snap-center shrink-0 relative">
             <FadeSection>
               <p className="font-serif text-4xl md:text-6xl text-stone-700 text-center leading-snug">
                  Like everything is asking
@@ -95,48 +98,96 @@ const App: React.FC = () => {
                  too much of you.
               </p>
             </FadeSection>
+            <ScrollIndicator delay={3000} />
         </section>
 
           {/* Dynamic Prompts */}
           {PROMPTS.map((prompt, index) => {
+            if (prompt === "Take a moment.") {
+               return (
+                 <div key={index} className="relative">
+                   <MomentSection />
+                   <ScrollIndicator delay={4000} />
+                 </div>
+               );
+            }
             if (prompt === "Unclench your jaw.") {
-              return <UnclenchSection key={index} />;
+              return (
+                <div key={index} className="relative">
+                  <UnclenchSection />
+                  <ScrollIndicator delay={4000} />
+                </div>
+              );
             }
             if (prompt === "Drop your shoulders.") {
-              return <ShoulderSection key={index} />;
+              return (
+                <div key={index} className="relative">
+                  <ShoulderSection />
+                  <ScrollIndicator delay={4500} />
+                </div>
+              );
             }
             return (
-              <section key={index} className="h-screen w-full flex items-center justify-center snap-center shrink-0">
+              <section key={index} className="h-screen w-full flex items-center justify-center snap-center shrink-0 relative">
                 <FadeSection>
                   <p className="font-serif text-3xl md:text-5xl text-stone-600 italic text-center">
                     {prompt}
                   </p>
                 </FadeSection>
+                <ScrollIndicator delay={2500} />
               </section>
             );
           })}
 
         {/* Dynamic Action Filler */}
-        <section className="h-screen w-full flex items-center justify-center snap-center shrink-0">
+        <section className="h-screen w-full flex items-center justify-center snap-center shrink-0 relative">
           <FadeSection className="w-full">
             <DynamicFiller />
           </FadeSection>
+          <ScrollIndicator delay={8000} />
+        </section>
+        
+        {/* Breathing Intro Section */}
+        <section className="h-screen w-full flex flex-col items-center justify-center gap-8 px-6 snap-center shrink-0 text-center relative">
+          <FadeSection>
+             <p className="font-serif text-4xl md:text-6xl text-stone-700 leading-snug mb-4">
+               Let's take a break <br/> and reset together.
+             </p>
+          </FadeSection>
+          
+          <FadeSection delay={400}>
+             <div className="flex flex-col items-center gap-4">
+               <p className="font-serif text-xl md:text-2xl text-stone-500 max-w-xl leading-relaxed">
+                 Next, we will do a 2-minute breathing exercise.
+               </p>
+               <div className="flex gap-3 text-stone-400 font-sans text-xs tracking-widest uppercase mt-4">
+                 <span>4s In</span>
+                 <span>•</span>
+                 <span>4s Hold</span>
+                 <span>•</span>
+                 <span>4s Out</span>
+                 <span>•</span>
+                 <span>4s Hold</span>
+               </div>
+             </div>
+          </FadeSection>
+          <ScrollIndicator delay={4000} />
         </section>
 
         {/* Breathing Exercise Break */}
-        <section className="h-screen w-full flex items-center justify-center py-20 snap-center shrink-0">
+        <section className="h-screen w-full flex items-center justify-center py-20 snap-center shrink-0 relative">
           <FadeSection className="w-full max-w-2xl">
-            <div className="bg-white/40 border border-stone-100 rounded-3xl p-12 md:p-20 shadow-sm backdrop-blur-sm transition-transform hover:scale-[1.01] duration-1000 mx-6">
-               <h2 className="text-center font-sans text-xs uppercase tracking-[0.25em] text-stone-400 mb-12">
-                 Let's reset together
-               </h2>
+            {/* Removed card styling (bg-white, shadow, borders) to blend with page */}
+            <div className="mx-6">
                <BreathingExercise />
             </div>
           </FadeSection>
+          {/* Long delay so it doesn't distract during the start of breathing, but still appears if they stall */}
+          <ScrollIndicator delay={15000} />
         </section>
 
         {/* Post-Breathing Reassurance */}
-        <section className="h-screen w-full flex flex-col items-center justify-center gap-6 snap-center shrink-0">
+        <section className="h-screen w-full flex flex-col items-center justify-center gap-6 snap-center shrink-0 relative">
             <FadeSection>
               <p className="font-serif text-4xl md:text-6xl text-stone-700 text-center leading-snug">
                 The world can wait
@@ -147,9 +198,10 @@ const App: React.FC = () => {
                 for a few minutes. 
               </p>
             </FadeSection>
+            <ScrollIndicator delay={3000} />
         </section>
 
-        <section className="h-screen w-full flex flex-col items-center justify-center gap-6 snap-center shrink-0">
+        <section className="h-screen w-full flex flex-col items-center justify-center gap-6 snap-center shrink-0 relative">
             <FadeSection>
               <p className="font-serif text-4xl md:text-6xl text-stone-700 text-center leading-snug">
                 Your only job right now
@@ -163,7 +215,7 @@ const App: React.FC = () => {
         </section>
 
         {/* Footer / CTA */}
-        <section className="h-screen w-full flex flex-col items-center justify-center snap-center shrink-0">
+        <section className="h-screen w-full flex flex-col items-center justify-center snap-center shrink-0 relative">
           <FadeSection>
             <footer className="flex flex-col items-center gap-12">
               <button
