@@ -30,11 +30,11 @@ const MomentSection: React.FC = () => {
            <span>Take a</span>
            {/* 
              Only apply the animation class when isVisible is true.
-             This ensures the "Inhale" starts exactly when the user looks at it.
+             Removed italic to make it feel more stable.
            */}
            <span 
              ref={textRef}
-             className={`italic text-stone-500 origin-center inline-block will-change-transform ${isVisible ? 'animate-text-breath' : 'opacity-0'}`}
+             className={`text-stone-400 origin-center inline-block will-change-transform ${isVisible ? 'animate-text-breath' : 'opacity-0'}`}
            >
              moment.
            </span>

@@ -21,22 +21,22 @@ const ScrollIndicator: React.FC<ScrollIndicatorProps> = ({ delay = 3000, classNa
     <div 
       className={`
         absolute bottom-12 left-1/2 -translate-x-1/2 
-        flex flex-col items-center gap-3
         transition-all duration-1000 ease-in-out
         pointer-events-none select-none
-        animate-float
         ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'} 
         ${className}
       `}
     >
-      <span className="font-serif text-xs italic tracking-[0.2em] text-stone-400 uppercase">
-        Scroll
-      </span>
-      <ChevronDown 
-        size={20} 
-        className="text-stone-500 opacity-80" 
-        strokeWidth={1.5}
-      />
+      <div className="flex flex-col items-center gap-3 animate-float">
+        <span className="font-serif text-xs italic tracking-[0.2em] text-stone-400 uppercase">
+          Scroll
+        </span>
+        <ChevronDown 
+          size={20} 
+          className="text-stone-500 opacity-80" 
+          strokeWidth={1.5}
+        />
+      </div>
     </div>
   );
 };

@@ -43,7 +43,7 @@
               'squeeze-shake': 'squeezeShake 4s ease-in-out infinite',
               'float': 'float 3s ease-in-out infinite',
               'sigh': 'sigh 4s ease-out forwards',
-              'text-breath': 'textBreath 4s ease-in-out forwards',
+              'text-breath': 'textBreath 6s ease-in-out forwards',
             },
             keyframes: {
               float: {
@@ -81,9 +81,9 @@
                 '100%': { letterSpacing: '0.15em', opacity: '0.6', filter: 'blur(0.5px)' }
               },
               textBreath: {
-                '0%': { transform: 'scale(1)', letterSpacing: '0em', opacity: '0.7' },
-                '50%': { transform: 'scale(1.3)', letterSpacing: '0.1em', opacity: '1' }, /* Inhale - Bigger & Wider */
-                '100%': { transform: 'scale(1)', letterSpacing: '0em', opacity: '1' } /* Exhale - Return */
+                '0%': { transform: 'scale(1)', color: '#a8a29e' }, /* Start subtle (stone-400) */
+                '50%': { transform: 'scale(1.1)', color: '#44403c' }, /* Inhale slightly larger & darker (stone-700) */
+                '100%': { transform: 'scale(1)', color: '#57534e' } /* Exhale back to normal size, settled color (stone-600) */
               }
             }
           },
