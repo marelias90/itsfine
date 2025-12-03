@@ -46,7 +46,7 @@ const App: React.FC = () => {
             onClick={() => setHasStarted(true)}
             className="group relative px-16 py-4 rounded-full bg-transparent border border-stone-300 text-stone-600 transition-all duration-700 hover:border-stone-400 hover:bg-stone-50 hover:text-stone-800 hover:shadow-lg hover:shadow-stone-200/50"
           >
-            <span className="font-serif text-3xl italic relative z-10">Yeah</span>
+            <span className="font-serif text-3xl relative z-10">Yes</span>
           </button>
 
           <button
