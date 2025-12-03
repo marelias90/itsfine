@@ -36,7 +36,7 @@ const MomentSection: React.FC = () => {
              ref={textRef}
              className={`text-stone-400 origin-center inline-block will-change-transform ${isVisible ? 'animate-text-breath' : 'opacity-0'}`}
            >
-             moment.
+             moment
            </span>
         </p>
       </FadeSection>

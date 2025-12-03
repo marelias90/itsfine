@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A gentle reminder for rough days—you will be fine.">
     <title>You Will Be Fine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -12,6 +13,10 @@
             fontFamily: {
               serif: ['"Playfair Display"', 'Georgia', 'serif'],
               sans: ['"Inter"', 'sans-serif'],
+            },
+            transitionTimingFunction: {
+              'soft': 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+              'decay': 'cubic-bezier(0.25, 1, 0.5, 1)',
             },
             colors: {
               paper: '#f9f8f4',
@@ -56,10 +61,12 @@
                 '80%, 100%': { transform: 'translateY(0)' }
               },
               shoulderDrop: {
-                '0%, 15%': { transform: 'translateY(-24px)' }, /* Tensed / Up high */
-                '40%': { transform: 'translateY(0)' }, /* Relaxed / Down */
-                '85%': { transform: 'translateY(0)' }, /* Stay Down */
-                '100%': { transform: 'translateY(-24px)' } /* Loop back to tense */
+                '0%': { transform: 'translateY(-16px)' }, /* Tensed - shoulders up near ears */
+                '25%': { transform: 'translateY(-16px)' }, /* Hold tension briefly */
+                '35%': { transform: 'translateY(0)' }, /* Drop down - quick release */
+                '90%': { transform: 'translateY(0)' }, /* Stay relaxed - this is the goal state */
+                '95%': { transform: 'translateY(-4px)' }, /* Subtle rise as cycle prepares to repeat */
+                '100%': { transform: 'translateY(-16px)' } /* Back to tense for loop */
               },
               archRelax: {
                 '0%, 20%': { transform: 'scaleY(1) translateY(0)' }, 
@@ -90,6 +97,7 @@
         },
       };
     </script>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500&display=swap" as="style">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
       body {
@@ -113,6 +121,23 @@
       .no-scrollbar {
         -ms-overflow-style: none;
         scrollbar-width: none;
+      }
+
+      /* Reduce motion for accessibility */
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+
+      /* Focus states for keyboard navigation */
+      button:focus-visible,
+      .group:focus-visible {
+        outline: 2px solid #a8a29e;
+        outline-offset: 4px;
+        border-radius: 9999px;
       }
     </style>
   <script type="importmap">

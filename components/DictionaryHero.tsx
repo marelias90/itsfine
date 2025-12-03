@@ -7,15 +7,15 @@ const DictionaryHero: React.FC = () => {
   const [showDefinition, setShowDefinition] = useState(false);
 
   useEffect(() => {
-    // Wait a bit, then change "You" to "I"
+    // Wait a bit, then change "You" to "I" (Increased to 2500)
     const t1 = setTimeout(() => {
       setIsMe(true);
-    }, 2000);
+    }, 2500);
 
-    // Wait a bit more, then show the definition
+    // Wait a bit more, then show the definition (Increased to 4500)
     const t2 = setTimeout(() => {
       setShowDefinition(true);
-    }, 3500);
+    }, 4500);
 
     return () => {
       clearTimeout(t1);
@@ -35,7 +35,7 @@ const DictionaryHero: React.FC = () => {
                {/* 'You' - collapses width when !isMe */}
                <span 
                  className={`
-                   transition-[max-width,opacity,transform] duration-[1500ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] whitespace-nowrap overflow-hidden
+                   transition-[max-width,opacity,transform] duration-[1500ms] ease-soft whitespace-nowrap overflow-hidden
                    ${isMe ? 'max-w-0 opacity-0 -translate-y-2' : 'max-w-[2em] opacity-100 translate-y-0'}
                  `}
                >
@@ -45,7 +45,7 @@ const DictionaryHero: React.FC = () => {
                {/* 'I' - expands width when isMe */}
                <span 
                  className={`
-                   transition-[max-width,opacity,transform] duration-[1500ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] whitespace-nowrap overflow-hidden
+                   transition-[max-width,opacity,transform] duration-[1500ms] ease-soft whitespace-nowrap overflow-hidden
                    ${isMe ? 'max-w-[0.8em] opacity-100 translate-y-0' : 'max-w-0 opacity-0 translate-y-4'}
                  `}
                >
@@ -76,7 +76,7 @@ const DictionaryHero: React.FC = () => {
         </div>
       </div>
 
-      <ScrollIndicator delay={4500} />
+      <ScrollIndicator delay={5500} />
     </section>
   );
 };

@@ -44,11 +44,7 @@ const SinkingFade: React.FC<SinkingFadeProps> = ({
   return (
     <div
       ref={domRef}
-      // Duration: 3000ms (3s)
-      // Ease: cubic-bezier(0.25, 1, 0.5, 1) -> Moderate start, very long slow finish (Decay)
-      // Start: -translate-y-[40px] (40px above), opacity-0, blur-[5px]
-      // End: translate-y-0, opacity-100, blur-0
-      className={`transition-all duration-[3000ms] ease-[cubic-bezier(0.25,1,0.5,1)] will-change-[opacity,transform,filter] ${
+      className={`transition-all duration-[3000ms] ease-decay will-change-[opacity,transform,filter] ${
         isVisible 
           ? 'opacity-100 translate-y-0 blur-0' 
           : 'opacity-0 -translate-y-[40px] blur-[5px]'

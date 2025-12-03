@@ -45,9 +45,7 @@ const FadeSection: React.FC<FadeSectionProps> = ({
   return (
     <div
       ref={domRef}
-      // Increased duration to 2000ms and added blur transition
-      // cubic-bezier(0.2, 0.8, 0.2, 1) is a very soft "ease-out"
-      className={`transition-all duration-[2000ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] will-change-[opacity,transform] ${
+      className={`transition-all duration-[1400ms] ease-soft will-change-[opacity,transform] ${
         isVisible 
           ? 'opacity-100 translate-y-0 blur-0' 
           : 'opacity-0 translate-y-12 blur-md'

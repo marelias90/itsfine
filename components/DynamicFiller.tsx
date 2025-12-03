@@ -47,9 +47,9 @@ const DynamicFiller: React.FC = () => {
           setIndex((prev) => prev + 1);
           // Start fade in
           setFadeOpacity(1);
-        }, 500); // Wait for half the transition time
+        }, 250); // Wait for half the transition time (500ms / 2)
 
-      }, 2000); // Total time per word (slower for readability)
+      }, 1900); // Total time per word (faster)
       
       return () => clearInterval(interval);
     } else {
@@ -68,7 +68,7 @@ const DynamicFiller: React.FC = () => {
         <span className="inline-grid place-items-center">
              {/* Using a grid to stack allows smoother layout but for now we just fade text */}
              <span 
-               className="italic border-b border-stone-200 pb-2 transition-all duration-700 ease-in-out block text-stone-600"
+               className="italic border-b border-stone-200 pb-2 transition-all duration-500 ease-soft block text-stone-600"
                style={{ 
                  opacity: fadeOpacity, 
                  transform: fadeOpacity === 0 ? 'translateY(10px)' : 'translateY(0)',
@@ -78,12 +78,11 @@ const DynamicFiller: React.FC = () => {
                {FILLERS[index]}
              </span>
         </span>
-        .
       </p>
       
       <div className="h-24 flex items-center justify-center">
         <p 
-          className={`font-serif text-2xl md:text-4xl text-stone-500 text-center transition-all duration-[2500ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] transform ${
+          className={`font-serif text-2xl md:text-4xl text-stone-500 text-center transition-all duration-[2500ms] ease-soft transform ${
             isDone ? 'opacity-100 translate-y-0 blur-0' : 'opacity-0 translate-y-8 blur-sm'
           }`}
         >

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import FadeSection from './FadeSection';
 
 const UnclenchSection: React.FC = () => {
@@ -17,7 +17,7 @@ const UnclenchSection: React.FC = () => {
            </div>
 
           <p className="font-serif text-3xl md:text-5xl text-stone-600 italic text-center select-none pointer-events-none">
-            Unclench your jaw.
+            Unclench your jaw
           </p>
         </div>
       </FadeSection>

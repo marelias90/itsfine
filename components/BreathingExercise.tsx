@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Play, Square, Volume2, VolumeX } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { BreathingPhase } from '../types';
 
 const BreathingExercise: React.FC = () => {
   const [isActive, setIsActive] = useState(false);
   const [isCountingDown, setIsCountingDown] = useState(false);
-  const [count, setCount] = useState(5);
+  const [count, setCount] = useState(3);
   const [phase, setPhase] = useState<BreathingPhase>(BreathingPhase.Idle);
   const [isMuted, setIsMuted] = useState(false);
   
@@ -107,14 +107,14 @@ const BreathingExercise: React.FC = () => {
 
   const handleStart = () => {
     initAudio();
-    setCount(5);
+    setCount(3);
     setIsCountingDown(true);
   };
 
   const handleStop = () => {
     setIsActive(false);
     setIsCountingDown(false);
-    setCount(5);
+    setCount(3);
     cleanupAudio();
   };
 
@@ -131,37 +131,58 @@ const BreathingExercise: React.FC = () => {
   };
 
   // Animation Variants
-  const lungVariants = {
-    [BreathingPhase.Idle]: { scale: 1, opacity: 0.8 },
+  const lungVariants: Variants = {
+    [BreathingPhase.Idle]: { 
+      scale: 1, 
+      opacity: 0.8,
+      y: 0
+    },
     [BreathingPhase.Inhale]: { 
       scale: 1.5, 
       opacity: 1,
-      transition: { duration: 4, ease: "easeInOut" } 
+      y: -8,
+      transition: { duration: 4, ease: [0.4, 0, 0.2, 1] } 
     },
     [BreathingPhase.HoldFull]: { 
-      scale: 1.55, 
-      opacity: 0.9,
-      transition: { duration: 2, repeat: Infinity, repeatType: "mirror" as const, ease: "easeInOut" } 
+      scale: 1.5, 
+      y: -8,
+      opacity: [0.95, 1, 0.95],
+      transition: { 
+        scale: { duration: 0.3 },
+        y: { duration: 0.3 },
+        opacity: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+      } 
     },
     [BreathingPhase.Exhale]: { 
       scale: 1, 
       opacity: 0.8,
-      transition: { duration: 4, ease: "easeInOut" } 
+      y: 8,
+      transition: { duration: 4, ease: [0.6, 0, 0.4, 1] } 
     },
     [BreathingPhase.HoldEmpty]: { 
       scale: 1, 
-      opacity: 0.6,
-      transition: { duration: 4, ease: "linear" } 
+      y: 8,
+      opacity: [0.6, 0.65, 0.6],
+      transition: { 
+        scale: { duration: 0.3 },
+        y: { duration: 0.3 },
+        opacity: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+      } 
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center py-12 relative w-full">
+    <div className="flex flex-col items-center justify-center py-8 md:py-12 relative w-full">
       
       {/* Top Label */}
-      <h4 className="font-sans text-[10px] md:text-xs font-medium tracking-[0.25em] text-stone-500/50 mb-16 uppercase select-none">
-        Box Breathing
-      </h4>
+      <div className="flex flex-col items-center mb-16">
+        <h4 className="font-sans text-[10px] md:text-xs font-medium tracking-[0.25em] text-stone-500/50 uppercase select-none mb-4">
+          Box Breathing
+        </h4>
+        <p className="font-sans text-xs text-stone-400 italic">
+          With optional audio guidance
+        </p>
+      </div>
 
       {/* Main Graphic Area */}
       <div className="relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center mb-12">
@@ -187,13 +208,13 @@ const BreathingExercise: React.FC = () => {
             <motion.div
               variants={lungVariants}
               animate={isActive ? phase : BreathingPhase.Idle}
-              className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-clay-400/30 blur-2xl absolute -translate-x-6 mix-blend-multiply"
+              className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-clay-400/30 blur-xl absolute -translate-x-6 mix-blend-multiply"
             />
             {/* Right Lobe */}
             <motion.div
               variants={lungVariants}
               animate={isActive ? phase : BreathingPhase.Idle}
-              className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-clay-500/30 blur-2xl absolute translate-x-6 mix-blend-multiply"
+              className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-clay-500/30 blur-xl absolute translate-x-6 mix-blend-multiply"
             />
             {/* Core Gradient Sphere for solidity */}
             <motion.div
@@ -201,6 +222,17 @@ const BreathingExercise: React.FC = () => {
                animate={isActive ? phase : BreathingPhase.Idle}
                className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-clay-400 to-clay-300 opacity-80 blur-lg z-10"
             />
+
+            {/* Expanding ring during inhale */}
+            {isActive && phase === BreathingPhase.Inhale && (
+              <motion.div
+                key="inhale-ring"
+                initial={{ scale: 0.8, opacity: 0.6 }}
+                animate={{ scale: 2, opacity: 0 }}
+                transition={{ duration: 4, ease: "easeOut" }}
+                className="absolute w-48 h-48 rounded-full border-2 border-clay-400/40"
+              />
+            )}
         </div>
 
         {/* Instruction Text - Only shows when active (not counting down) */}
