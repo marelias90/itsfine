@@ -10,6 +10,10 @@ const BreathingExercise: React.FC = () => {
   const [phase, setPhase] = useState<BreathingPhase>(BreathingPhase.Idle);
   const [isMuted, setIsMuted] = useState(false);
   
+  // Cycle tracking
+  const [cycleCount, setCycleCount] = useState(0);
+  const MAX_CYCLES = 10; // 10 cycles = 160 seconds
+  
   // Audio Refs
   const audioContextRef = useRef<AudioContext | null>(null);
   const oscRef = useRef<OscillatorNode | null>(null);
@@ -83,7 +87,6 @@ const BreathingExercise: React.FC = () => {
             break;
           case BreathingPhase.HoldFull:
             // Silence during hold
-            // playTone(180, 'sine', 0.1); // Removed as requested
             timer = setTimeout(() => setPhase(BreathingPhase.Exhale), 4000);
             break;
           case BreathingPhase.Exhale:
@@ -92,7 +95,16 @@ const BreathingExercise: React.FC = () => {
             break;
           case BreathingPhase.HoldEmpty:
             // Silence during hold
-            timer = setTimeout(() => setPhase(BreathingPhase.Inhale), 4000);
+            timer = setTimeout(() => {
+              // Check if we've completed enough cycles
+              if (cycleCount >= MAX_CYCLES - 1) {
+                setIsActive(false);
+                setCycleCount(0);
+              } else {
+                setPhase(BreathingPhase.Inhale);
+                setCycleCount(prev => prev + 1);
+              }
+            }, 4000);
             break;
         }
       };
@@ -103,11 +115,12 @@ const BreathingExercise: React.FC = () => {
     }
 
     return () => clearTimeout(timer);
-  }, [isActive, phase, playTone, cleanupAudio]);
+  }, [isActive, phase, playTone, cleanupAudio, cycleCount]);
 
   const handleStart = () => {
     initAudio();
     setCount(3);
+    setCycleCount(0);
     setIsCountingDown(true);
   };
 
@@ -115,6 +128,7 @@ const BreathingExercise: React.FC = () => {
     setIsActive(false);
     setIsCountingDown(false);
     setCount(3);
+    setCycleCount(0);
     cleanupAudio();
   };
 
@@ -174,18 +188,8 @@ const BreathingExercise: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center py-8 md:py-12 relative w-full">
       
-      {/* Top Label */}
-      <div className="flex flex-col items-center mb-16">
-        <h4 className="font-sans text-[10px] md:text-xs font-medium tracking-[0.25em] text-stone-500/50 uppercase select-none mb-4">
-          Box Breathing
-        </h4>
-        <p className="font-sans text-xs text-stone-400 italic">
-          With optional audio guidance
-        </p>
-      </div>
-
-      {/* Main Graphic Area */}
-      <div className="relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center mb-12">
+      {/* Main Graphic Area - Increased size */}
+      <div className="relative w-80 h-80 md:w-96 md:h-96 flex items-center justify-center mb-12">
         
         {/* Countdown Overlay */}
         <AnimatePresence>
@@ -204,33 +208,33 @@ const BreathingExercise: React.FC = () => {
 
         {/* The "Lungs" - Organic Shapes */}
         <div className="absolute inset-0 flex items-center justify-center">
-            {/* Left Lobe */}
+            {/* Left Lobe - Increased size */}
             <motion.div
               variants={lungVariants}
               animate={isActive ? phase : BreathingPhase.Idle}
-              className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-clay-400/30 blur-xl absolute -translate-x-6 mix-blend-multiply"
+              className="w-56 h-56 md:w-72 md:h-72 rounded-full bg-clay-400/30 blur-xl absolute -translate-x-6 mix-blend-multiply"
             />
-            {/* Right Lobe */}
+            {/* Right Lobe - Increased size */}
             <motion.div
               variants={lungVariants}
               animate={isActive ? phase : BreathingPhase.Idle}
-              className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-clay-500/30 blur-xl absolute translate-x-6 mix-blend-multiply"
+              className="w-56 h-56 md:w-72 md:h-72 rounded-full bg-clay-500/30 blur-xl absolute translate-x-6 mix-blend-multiply"
             />
-            {/* Core Gradient Sphere for solidity */}
+            {/* Core Gradient Sphere for solidity - Increased size */}
             <motion.div
                variants={lungVariants}
                animate={isActive ? phase : BreathingPhase.Idle}
-               className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-clay-400 to-clay-300 opacity-80 blur-lg z-10"
+               className="w-44 h-44 md:w-60 md:h-60 rounded-full bg-gradient-to-tr from-clay-400 to-clay-300 opacity-80 blur-lg z-10"
             />
 
-            {/* Expanding ring during inhale */}
+            {/* Expanding ring during inhale - Increased size */}
             {isActive && phase === BreathingPhase.Inhale && (
               <motion.div
                 key="inhale-ring"
                 initial={{ scale: 0.8, opacity: 0.6 }}
                 animate={{ scale: 2, opacity: 0 }}
                 transition={{ duration: 4, ease: "easeOut" }}
-                className="absolute w-48 h-48 rounded-full border-2 border-clay-400/40"
+                className="absolute w-72 h-72 rounded-full border-2 border-clay-400/40"
               />
             )}
         </div>
@@ -245,50 +249,49 @@ const BreathingExercise: React.FC = () => {
       </div>
 
       {/* Controls Container */}
-      <div className="flex flex-col items-center gap-8 z-20">
+      <div className="flex flex-col items-center gap-6 z-20">
         
-        <div className="flex items-center gap-4">
-           {/* Primary Button */}
-           <AnimatePresence mode="wait">
-             {!isActive && !isCountingDown ? (
-               <motion.button
-                 key="start"
-                 initial={{ opacity: 0, y: 10 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 exit={{ opacity: 0, y: -10 }}
-                 onClick={handleStart}
-                 className="flex items-center gap-3 px-8 py-3 bg-clay-500 hover:bg-clay-600 text-white rounded-full shadow-sm hover:shadow-md transition-all duration-300 font-sans text-sm font-medium tracking-wide"
-               >
-                 <Play size={14} fill="currentColor" />
-                 Start Exercise
-               </motion.button>
-             ) : (
-               <motion.button
-                 key="stop"
-                 initial={{ opacity: 0, y: 10 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 exit={{ opacity: 0, y: -10 }}
-                 onClick={handleStop}
-                 className="flex items-center gap-3 px-8 py-3 bg-stone-200 hover:bg-stone-300 text-stone-600 rounded-full transition-all duration-300 font-sans text-sm font-medium tracking-wide"
-               >
-                 <Square size={14} fill="currentColor" />
-                 Stop
-               </motion.button>
-             )}
-           </AnimatePresence>
+        {/* Primary Button */}
+        <AnimatePresence mode="wait">
+          {!isActive && !isCountingDown ? (
+            <motion.button
+              key="start"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              onClick={handleStart}
+              className="flex items-center gap-3 px-8 py-3 bg-clay-500 hover:bg-clay-600 text-white rounded-full shadow-sm hover:shadow-md transition-all duration-300 font-sans text-sm font-medium tracking-wide"
+            >
+              <Play size={14} fill="currentColor" />
+              Start Exercise
+            </motion.button>
+          ) : (
+            <motion.button
+              key="stop"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              onClick={handleStop}
+              className="flex items-center gap-3 px-8 py-3 bg-stone-200 hover:bg-stone-300 text-stone-600 rounded-full transition-all duration-300 font-sans text-sm font-medium tracking-wide"
+            >
+              <Square size={14} fill="currentColor" />
+              Stop
+            </motion.button>
+          )}
+        </AnimatePresence>
 
-           {/* Mute Toggle */}
-           <button
-             onClick={() => setIsMuted(!isMuted)}
-             className={`p-3 rounded-full transition-all duration-300 ${isMuted ? 'text-stone-300 hover:text-stone-500' : 'text-clay-500 hover:text-clay-600 bg-clay-50'}`}
-             title={isMuted ? "Unmute" : "Mute"}
-           >
-             {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-           </button>
-        </div>
+        {/* Mute Toggle - Below button with label */}
+        <button
+          onClick={() => setIsMuted(!isMuted)}
+          className={`flex items-center gap-2 text-xs transition-all duration-300 ${isMuted ? 'text-stone-300 hover:text-stone-500' : 'text-clay-500 hover:text-clay-600'}`}
+          title={isMuted ? "Unmute" : "Mute"}
+        >
+          {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+          <span className="font-sans tracking-wide">{isMuted ? 'Muted' : 'Audio on'}</span>
+        </button>
 
         {/* Footer Info */}
-        <div className="text-[10px] md:text-xs font-sans tracking-[0.2em] text-stone-400 uppercase">
+        <div className="text-[10px] md:text-xs font-sans tracking-[0.2em] text-stone-400 uppercase mt-2">
           4s In • 4s Hold • 4s Out • 4s Hold
         </div>
       </div>

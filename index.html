@@ -45,6 +45,9 @@
               'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
               'jaw-drop': 'jawDrop 4s ease-in-out infinite',
               'shoulder-drop': 'shoulderDrop 6s ease-in-out infinite',
+              'shoulder-expand-left': 'shoulderExpandLeft 6s ease-in-out infinite',
+              'shoulder-expand-right': 'shoulderExpandRight 6s ease-in-out infinite',
+              'tension-fade': 'tensionFade 6s ease-in-out infinite',
               'arch-relax': 'archRelax 4s ease-in-out infinite',
               'squeeze-shake': 'squeezeShake 4s ease-in-out infinite',
               'float': 'float 3s ease-in-out infinite',
@@ -68,6 +71,27 @@
                 '90%': { transform: 'translateY(0)' }, /* Stay relaxed - this is the goal state */
                 '95%': { transform: 'translateY(-4px)' }, /* Subtle rise as cycle prepares to repeat */
                 '100%': { transform: 'translateY(-16px)' } /* Back to tense for loop */
+              },
+              shoulderExpandLeft: {
+                '0%, 20%': { transform: 'translateY(-16px) translateX(10px)' },
+                '45%': { transform: 'translateY(0) translateX(-8px)' },
+                '85%': { transform: 'translateY(0) translateX(-8px)' },
+                '92%': { transform: 'translateY(-8px) translateX(2px)' },
+                '100%': { transform: 'translateY(-16px) translateX(10px)' }
+              },
+              shoulderExpandRight: {
+                '0%, 20%': { transform: 'translateY(-16px) translateX(-10px)' },
+                '45%': { transform: 'translateY(0) translateX(8px)' },
+                '85%': { transform: 'translateY(0) translateX(8px)' },
+                '92%': { transform: 'translateY(-8px) translateX(-2px)' },
+                '100%': { transform: 'translateY(-16px) translateX(-10px)' }
+              },
+              tensionFade: {
+                '0%, 20%': { transform: 'translateY(-16px)', opacity: '0.5' },
+                '45%': { transform: 'translateY(0)', opacity: '0' },
+                '85%': { transform: 'translateY(0)', opacity: '0' },
+                '92%': { transform: 'translateY(-8px)', opacity: '0.25' },
+                '100%': { transform: 'translateY(-16px)', opacity: '0.5' }
               },
               archRelax: {
                 '0%, 20%': { transform: 'scaleY(1) translateY(0)' }, 

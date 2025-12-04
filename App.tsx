@@ -158,7 +158,7 @@ const App: React.FC = () => {
           <FadeSection delay={400}>
              <div className="flex flex-col items-center gap-4">
                <p className="font-serif text-xl md:text-2xl text-stone-500 max-w-xl leading-relaxed">
-                 Next, we will do a 2-minute breathing exercise
+                 Next, we will do a breathing exercise
                </p>
                <div className="flex gap-3 text-stone-400 font-sans text-xs tracking-widest uppercase mt-4">
                  <span>4s In</span>
@@ -181,7 +181,7 @@ const App: React.FC = () => {
                <BreathingExercise />
             </div>
           </FadeSection>
-          <ScrollIndicator delay={15000} />
+          <ScrollIndicator delay={30000} />
         </section>
 
         {/* Post-Breathing Reassurance */}
