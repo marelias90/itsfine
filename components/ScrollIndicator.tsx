@@ -20,7 +20,7 @@ const ScrollIndicator: React.FC<ScrollIndicatorProps> = ({ delay = 3000, classNa
   return (
     <div 
       className={`
-        absolute bottom-12 left-1/2 -translate-x-1/2 
+        absolute bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 
         transition-all duration-1000 ease-in-out
         pointer-events-none select-none
         ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'} 

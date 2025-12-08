@@ -11,9 +11,11 @@ import ScrollIndicator from './components/ScrollIndicator';
 import { PROMPTS } from './constants';
 
 const App: React.FC = () => {
+  const [hasSeenIntro, setHasSeenIntro] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showCopied, setShowCopied] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -33,20 +35,43 @@ const App: React.FC = () => {
     }
   };
 
+  // 1. Onboarding Screen
+  if (!hasSeenIntro) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-paper px-6 text-center transition-opacity duration-1000">
+        <div className="max-w-2xl animate-fade-in">
+          <h1 className="font-serif text-4xl md:text-6xl text-stone-800 mb-8 leading-tight">
+            A gentle reminder
+          </h1>
+          <p className="font-serif text-xl md:text-2xl text-stone-600 mb-12 leading-relaxed">
+            This is a quiet space for when days feel heavy.<br/>
+            Take a few minutes to pause, breathe, and reset.
+          </p>
+          <button
+            onClick={() => setHasSeenIntro(true)}
+            className="px-12 py-4 rounded-full bg-transparent border border-stone-300 text-stone-600 font-serif text-xl italic transition-all duration-700 hover:border-stone-400 hover:bg-stone-50 hover:text-stone-800"
+          >
+            Begin
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Question Screen
   if (!hasStarted) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-paper px-6 text-center transition-opacity duration-1000">
-        <h1 className="font-serif text-4xl md:text-7xl text-stone-800 mb-16 leading-tight animate-fade-in">
+        <h1 className="font-serif text-4xl md:text-6xl text-stone-800 mb-16 leading-tight animate-fade-in">
           Did today feel a little<br /><span className="italic text-stone-500">heavy?</span>
         </h1>
         <div className="flex flex-col items-center gap-8 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
           
-          {/* "Loving" Button Redesign */}
           <button
             onClick={() => setHasStarted(true)}
             className="group relative px-16 py-4 rounded-full bg-transparent border border-stone-300 text-stone-600 transition-all duration-700 hover:border-stone-400 hover:bg-stone-50 hover:text-stone-800 hover:shadow-lg hover:shadow-stone-200/50"
           >
-            <span className="font-serif text-3xl relative z-10">Yes</span>
+            <span className="font-serif text-2xl relative z-10">Yes</span>
           </button>
 
           <button
@@ -64,9 +89,10 @@ const App: React.FC = () => {
     <div className="bg-paper text-stone-900 h-screen w-full overflow-hidden transition-opacity duration-1000 opacity-100">
       
       {/* Main Scroll Container with Snapping */}
+      {/* Changed snap-mandatory to snap-proximity for better mobile feel */}
       <main 
         ref={scrollContainerRef}
-        className="h-full w-full overflow-y-scroll snap-y snap-mandatory scroll-smooth no-scrollbar"
+        className="h-full w-full overflow-y-scroll snap-y snap-proximity scroll-smooth no-scrollbar"
       >
         
         {/* Dictionary Hero Section - Includes its own internal ScrollIndicator */}
@@ -221,22 +247,82 @@ const App: React.FC = () => {
             </FadeSection>
         </section>
 
-        {/* Footer / CTA */}
-        <section className="h-screen w-full flex flex-col items-center justify-center snap-center shrink-0 relative">
+        {/* Closing / Next Steps */}
+        <section className="h-screen w-full flex flex-col items-center justify-center snap-center shrink-0 px-6 relative">
           <FadeSection>
-            <footer className="flex flex-col items-center gap-12">
-              <button
-                onClick={handleShare}
-                className="group relative flex items-center gap-3 px-8 py-4 bg-stone-100 hover:bg-stone-200 text-stone-600 rounded-full transition-all duration-700 text-sm tracking-widest uppercase"
-              >
-                <Share2 size={16} className="text-stone-400 group-hover:scale-110 transition-transform duration-500" />
-                {showCopied ? 'Link copied!' : 'Send to a friend'}
-              </button>
+            <div className="max-w-2xl text-center space-y-12">
               
-              <div className="text-stone-300 text-xs flex items-center gap-2 font-sans tracking-widest opacity-60">
-                Made with <Heart size={10} fill="currentColor" /> when you need it
+              {/* Main Heading */}
+              <h2 className="font-serif text-4xl md:text-6xl text-stone-800 leading-tight mb-8">
+                Come back whenever<br/>you need this
+              </h2>
+              
+              {/* Content Section */}
+              <div className="space-y-8 text-stone-600 font-serif text-lg md:text-xl leading-relaxed">
+                
+                {/* Bookmark Message */}
+                <p>
+                  Bookmark this page for rough days
+                </p>
+                
+                {/* Sharing Message */}
+                <div className="pt-4 pb-4 space-y-4">
+                  <p className="text-stone-700">
+                    Sometimes we can't find<br/>the right words to help someone
+                  </p>
+                  <p className="text-stone-500 italic">
+                    When you can't find the words,<br/>send them this instead
+                  </p>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                  
+                  {/* Copy Link Button */}
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.href);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }}
+                    className="px-6 py-3 rounded-full border border-stone-300 text-stone-600 font-serif text-base transition-all duration-700 hover:border-stone-400 hover:bg-stone-50"
+                  >
+                    {copied ? 'Link copied' : 'Copy link'}
+                  </button>
+                  
+                  {/* Share Button */}
+                  <button
+                    onClick={() => {
+                      if (navigator.share) {
+                        navigator.share({
+                          title: 'A gentle reminder',
+                          text: 'For when you need a moment',
+                          url: window.location.href
+                        });
+                      }
+                    }}
+                    className="px-6 py-3 rounded-full border border-stone-300 text-stone-600 font-serif text-base transition-all duration-700 hover:border-stone-400 hover:bg-stone-50"
+                  >
+                    Share
+                  </button>
+                </div>
               </div>
-            </footer>
+
+              {/* Start Over Link */}
+              <div className="pt-4 border-t border-stone-200 mt-12">
+                <button
+                  onClick={() => {
+                    setHasStarted(false);
+                    setHasSeenIntro(false); 
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="text-stone-400 text-sm hover:text-stone-600 transition-all duration-500 tracking-widest uppercase border-b border-transparent hover:border-stone-300 pb-1"
+                >
+                  Start over
+                </button>
+              </div>
+              
+            </div>
           </FadeSection>
         </section>
 
