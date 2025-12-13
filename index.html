@@ -170,6 +170,33 @@
         outline-offset: 4px;
         border-radius: 9999px;
       }
+
+      /* Enhanced scroll snap for cross-browser compatibility */
+      .snap-y {
+        scroll-snap-type: y mandatory;
+        -webkit-scroll-snap-type: y mandatory; /* Safari */
+      }
+
+      .snap-center {
+        scroll-snap-align: center;
+        scroll-snap-stop: always; /* Force snap on each section */
+        -webkit-scroll-snap-align: center;
+      }
+
+      /* Smooth scrolling with better performance */
+      @supports (scroll-behavior: smooth) {
+        html {
+          scroll-behavior: smooth;
+        }
+      }
+
+      /* Prevent scroll issues on iOS */
+      @supports (-webkit-touch-callout: none) {
+        .snap-y {
+          -webkit-overflow-scrolling: touch;
+          scroll-padding: 0;
+        }
+      }
     </style>
   <script type="importmap">
 {
