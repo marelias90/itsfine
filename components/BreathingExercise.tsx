@@ -8,7 +8,7 @@ const BreathingExercise: React.FC = () => {
   const [isCountingDown, setIsCountingDown] = useState(false);
   const [count, setCount] = useState(3);
   const [phase, setPhase] = useState<BreathingPhase>(BreathingPhase.Idle);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   
   // Cycle tracking
   const [cycleCount, setCycleCount] = useState(0);
@@ -240,12 +240,23 @@ const BreathingExercise: React.FC = () => {
         </div>
 
         {/* Instruction Text - Only shows when active (not counting down) */}
-        <motion.div 
+        <motion.div
           animate={{ opacity: isActive && !isCountingDown ? 1 : 0.5 }}
           className="relative z-10 font-serif text-3xl md:text-4xl text-stone-600 tracking-wide pointer-events-none"
         >
           {!isCountingDown && getInstruction()}
         </motion.div>
+
+        {/* Cycle Counter - Shows during active breathing */}
+        {isActive && !isCountingDown && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.6 }}
+            className="absolute bottom-8 z-10 font-sans text-xs text-stone-400 tracking-widest uppercase"
+          >
+            Cycle {cycleCount + 1}/{MAX_CYCLES}
+          </motion.div>
+        )}
       </div>
 
       {/* Controls Container */}
@@ -280,14 +291,14 @@ const BreathingExercise: React.FC = () => {
           )}
         </AnimatePresence>
 
-        {/* Mute Toggle - Below button with label */}
+        {/* Audio Toggle - Below button with label */}
         <button
           onClick={() => setIsMuted(!isMuted)}
-          className={`flex items-center gap-2 text-xs transition-all duration-300 ${isMuted ? 'text-stone-300 hover:text-stone-500' : 'text-clay-500 hover:text-clay-600'}`}
-          title={isMuted ? "Unmute" : "Mute"}
+          className={`flex items-center gap-2 text-xs transition-all duration-300 ${isMuted ? 'text-stone-400 hover:text-clay-500' : 'text-clay-500 hover:text-clay-600'}`}
+          title={isMuted ? "Enable calming audio tones" : "Disable audio"}
         >
           {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-          <span className="font-sans tracking-wide">{isMuted ? 'Muted' : 'Audio on'}</span>
+          <span className="font-sans tracking-wide">{isMuted ? 'Enable audio' : 'Audio enabled'}</span>
         </button>
 
         {/* Footer Info */}
