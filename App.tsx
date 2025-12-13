@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Share2, Heart } from 'lucide-react';
 import FadeSection from './components/FadeSection';
@@ -8,11 +9,12 @@ import ShoulderSection from './components/ShoulderSection';
 import MomentSection from './components/MomentSection';
 import DictionaryHero from './components/DictionaryHero';
 import ScrollIndicator from './components/ScrollIndicator';
+import TutorialScreen from './components/TutorialScreen';
 import { PROMPTS } from './constants';
 
 const App: React.FC = () => {
-  const [hasSeenIntro, setHasSeenIntro] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
+  const [hasSeenTutorial, setHasSeenTutorial] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showCopied, setShowCopied] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -35,37 +37,29 @@ const App: React.FC = () => {
     }
   };
 
-  // 1. Onboarding Screen
-  if (!hasSeenIntro) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-paper px-6 text-center transition-opacity duration-1000">
-        <div className="max-w-2xl animate-fade-in">
-          <h1 className="font-serif text-4xl md:text-6xl text-stone-800 mb-8 leading-tight">
-            A gentle reminder
-          </h1>
-          <p className="font-serif text-xl md:text-2xl text-stone-600 mb-12 leading-relaxed">
-            This is a quiet space for when days feel heavy.<br/>
-            Take a few minutes to pause, breathe, and reset.
-          </p>
-          <button
-            onClick={() => setHasSeenIntro(true)}
-            className="px-12 py-4 rounded-full bg-transparent border border-stone-300 text-stone-600 font-serif text-xl italic transition-all duration-700 hover:border-stone-400 hover:bg-stone-50 hover:text-stone-800"
-          >
-            Begin
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // 2. Question Screen
+  // 1. Landing Screen
   if (!hasStarted) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-paper px-6 text-center transition-opacity duration-1000">
-        <h1 className="font-serif text-4xl md:text-6xl text-stone-800 mb-16 leading-tight animate-fade-in">
+        
+        {/* Intro Context */}
+        <div className="max-w-xl animate-fade-in mb-16 md:mb-20 space-y-6">
+          <p className="font-serif text-sm md:text-base tracking-widest text-stone-400 uppercase">
+            A gentle reminder
+          </p>
+          <p className="font-serif text-lg md:text-xl text-stone-500 leading-relaxed">
+            This is a quiet space created for you.<br className="hidden md:block"/> 
+            Take 3 minutes to pause, breathe, and reset.
+          </p>
+        </div>
+
+        {/* Check-in Question */}
+        <h1 className="font-serif text-4xl md:text-6xl text-stone-800 mb-12 leading-tight animate-fade-in" style={{ animationDelay: '0.3s' }}>
           Did today feel a little<br /><span className="italic text-stone-500">heavy?</span>
         </h1>
-        <div className="flex flex-col items-center gap-8 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
+
+        {/* Actions */}
+        <div className="flex flex-col items-center gap-8 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
           
           <button
             onClick={() => setHasStarted(true)}
@@ -85,6 +79,12 @@ const App: React.FC = () => {
     );
   }
 
+  // 2. Tutorial Screen (Show after starting, before main app)
+  if (hasStarted && !hasSeenTutorial) {
+    return <TutorialScreen onComplete={() => setHasSeenTutorial(true)} />;
+  }
+
+  // 3. Main Application
   return (
     <div className="bg-paper text-stone-900 h-screen w-full overflow-hidden transition-opacity duration-1000 opacity-100">
       
@@ -133,7 +133,7 @@ const App: React.FC = () => {
                return (
                  <div key={index} className="relative">
                    <MomentSection />
-                   <ScrollIndicator delay={3500} />
+                   <ScrollIndicator delay={2500} />
                  </div>
                );
             }
@@ -141,7 +141,7 @@ const App: React.FC = () => {
               return (
                 <div key={index} className="relative">
                   <UnclenchSection />
-                  <ScrollIndicator delay={3500} />
+                  <ScrollIndicator delay={2500} />
                 </div>
               );
             }
@@ -149,7 +149,7 @@ const App: React.FC = () => {
               return (
                 <div key={index} className="relative">
                   <ShoulderSection />
-                  <ScrollIndicator delay={3500} />
+                  <ScrollIndicator delay={2500} />
                 </div>
               );
             }
@@ -197,7 +197,7 @@ const App: React.FC = () => {
                </div>
              </div>
           </FadeSection>
-          <ScrollIndicator delay={3000} />
+          <ScrollIndicator delay={2500} />
         </section>
 
         {/* Breathing Exercise Break */}
@@ -313,7 +313,7 @@ const App: React.FC = () => {
                 <button
                   onClick={() => {
                     setHasStarted(false);
-                    setHasSeenIntro(false); 
+                    setHasSeenTutorial(false);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   className="text-stone-400 text-sm hover:text-stone-600 transition-all duration-500 tracking-widest uppercase border-b border-transparent hover:border-stone-300 pb-1"

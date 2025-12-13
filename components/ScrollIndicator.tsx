@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 
@@ -22,7 +23,7 @@ const ScrollIndicator: React.FC<ScrollIndicatorProps> = ({ delay = 3000, classNa
       className={`
         absolute bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 
         transition-all duration-1000 ease-in-out
-        pointer-events-none select-none
+        pointer-events-none select-none will-change-[opacity,transform]
         ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'} 
         ${className}
       `}
