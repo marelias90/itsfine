@@ -321,7 +321,19 @@ const App: React.FC = () => {
                   Start over
                 </button>
               </div>
-              
+
+              {/* Creator Credit */}
+              <div className="pt-8 mt-4">
+                <a
+                  href="https://eliason.de"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-stone-400 text-xs hover:text-stone-600 transition-all duration-500 font-serif italic"
+                >
+                  If the weight feels different tomorrow, I'm here to help — Martin
+                </a>
+              </div>
+
             </div>
           </FadeSection>
         </section>
