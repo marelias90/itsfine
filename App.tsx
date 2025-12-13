@@ -89,10 +89,10 @@ const App: React.FC = () => {
     <div className="bg-paper text-stone-900 h-screen w-full overflow-hidden transition-opacity duration-1000 opacity-100">
       
       {/* Main Scroll Container with Snapping */}
-      {/* Changed snap-mandatory to snap-proximity for better mobile feel */}
-      <main 
+      <main
         ref={scrollContainerRef}
-        className="h-full w-full overflow-y-scroll snap-y snap-proximity scroll-smooth no-scrollbar"
+        className="h-full w-full overflow-y-scroll snap-y snap-mandatory no-scrollbar"
+        style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
       >
         
         {/* Dictionary Hero Section - Includes its own internal ScrollIndicator */}

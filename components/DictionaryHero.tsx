@@ -7,15 +7,15 @@ const DictionaryHero: React.FC = () => {
   const [showDefinition, setShowDefinition] = useState(false);
 
   useEffect(() => {
-    // Wait a bit, then change "You" to "I" (Increased to 2500)
+    // Wait a bit, then change "You" to "I"
     const t1 = setTimeout(() => {
       setIsMe(true);
-    }, 2500);
+    }, 1500);
 
-    // Wait a bit more, then show the definition (Increased to 4500)
+    // Wait a bit more, then show the definition
     const t2 = setTimeout(() => {
       setShowDefinition(true);
-    }, 4500);
+    }, 3000);
 
     return () => {
       clearTimeout(t1);
@@ -33,19 +33,19 @@ const DictionaryHero: React.FC = () => {
             {/* Animated Word Switcher Container */}
             <div className="flex items-baseline overflow-hidden">
                {/* 'You' - collapses width when !isMe */}
-               <span 
+               <span
                  className={`
-                   transition-[max-width,opacity,transform] duration-[1500ms] ease-soft whitespace-nowrap overflow-hidden
+                   transition-[max-width,opacity,transform] duration-[1000ms] ease-soft whitespace-nowrap overflow-hidden
                    ${isMe ? 'max-w-0 opacity-0 -translate-y-2' : 'max-w-[2em] opacity-100 translate-y-0'}
                  `}
                >
                  You
                </span>
-               
+
                {/* 'I' - expands width when isMe */}
-               <span 
+               <span
                  className={`
-                   transition-[max-width,opacity,transform] duration-[1500ms] ease-soft whitespace-nowrap overflow-hidden
+                   transition-[max-width,opacity,transform] duration-[1000ms] ease-soft whitespace-nowrap overflow-hidden
                    ${isMe ? 'max-w-[0.8em] opacity-100 translate-y-0' : 'max-w-0 opacity-0 translate-y-4'}
                  `}
                >
@@ -76,7 +76,7 @@ const DictionaryHero: React.FC = () => {
         </div>
       </div>
 
-      <ScrollIndicator delay={5500} />
+      <ScrollIndicator delay={3500} />
     </section>
   );
 };
