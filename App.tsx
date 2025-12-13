@@ -251,91 +251,74 @@ const App: React.FC = () => {
         {/* Closing / Next Steps */}
         <section className="h-screen w-full flex flex-col items-center justify-center snap-center shrink-0 px-4 md:px-6 relative">
           <FadeSection>
-            <div className="max-w-2xl text-center space-y-8 md:space-y-12 w-full">
+            <div className="max-w-xl text-center space-y-8 w-full">
 
               {/* Main Heading */}
-              <h2 className="font-serif text-3xl md:text-6xl text-stone-800 leading-tight mb-6 md:mb-8 px-2">
-                Come back whenever<br/>you need this
+              <h2 className="font-serif text-3xl md:text-5xl text-stone-800 leading-tight px-2">
+                Come back whenever you need this
               </h2>
 
-              {/* Content Section */}
-              <div className="space-y-6 md:space-y-8 text-stone-600 font-serif text-base md:text-xl leading-relaxed px-2">
+              {/* Primary Action - Save/Bookmark */}
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 3000);
+                }}
+                className="px-8 py-3 rounded-full bg-stone-800 text-stone-50 hover:bg-stone-700 transition-all duration-700 font-serif text-base md:text-lg shadow-sm hover:shadow-md"
+              >
+                {copied ? 'Link saved to clipboard' : 'Save for later'}
+              </button>
 
-                {/* Bookmark Message */}
-                <p className="break-words">
-                  Bookmark this page for rough days
+              {/* Secondary Action - Share */}
+              <div className="space-y-3 pt-4">
+                <p className="text-stone-500 text-sm md:text-base font-serif italic">
+                  For a friend who could use this
                 </p>
-
-                {/* Sharing Message */}
-                <div className="pt-2 md:pt-4 pb-2 md:pb-4 space-y-3 md:space-y-4">
-                  <p className="text-stone-700 break-words">
-                    Sometimes we can't find{' '}
-                    <br className="hidden md:inline"/>
-                    the right words to help someone
-                  </p>
-                  <p className="text-stone-500 italic break-words">
-                    When you can't find the words,{' '}
-                    <br className="hidden md:inline"/>
-                    send them this instead
-                  </p>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center pt-2 md:pt-4 px-4">
-
-                  {/* Copy Link Button */}
-                  <button
-                    onClick={() => {
+                <button
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({
+                        title: 'You Will Be Fine',
+                        text: 'A gentle reminder for when you need a moment',
+                        url: window.location.href
+                      });
+                    } else {
                       navigator.clipboard.writeText(window.location.href);
                       setCopied(true);
-                      setTimeout(() => setCopied(false), 2000);
-                    }}
-                    className="px-6 py-3 rounded-full border border-stone-300 text-stone-600 font-serif text-sm md:text-base transition-all duration-700 hover:border-stone-400 hover:bg-stone-50 whitespace-nowrap"
-                  >
-                    {copied ? 'Link copied' : 'Copy link'}
-                  </button>
-
-                  {/* Share Button */}
-                  <button
-                    onClick={() => {
-                      if (navigator.share) {
-                        navigator.share({
-                          title: 'A gentle reminder',
-                          text: 'For when you need a moment',
-                          url: window.location.href
-                        });
-                      }
-                    }}
-                    className="px-6 py-3 rounded-full border border-stone-300 text-stone-600 font-serif text-sm md:text-base transition-all duration-700 hover:border-stone-400 hover:bg-stone-50 whitespace-nowrap"
-                  >
-                    Share
-                  </button>
-                </div>
+                      setTimeout(() => setCopied(false), 3000);
+                    }
+                  }}
+                  className="text-stone-600 hover:text-stone-800 transition-all duration-500 text-sm md:text-base font-serif underline decoration-stone-300 hover:decoration-stone-500 underline-offset-4"
+                >
+                  Share
+                </button>
               </div>
 
-              {/* Start Over Link */}
-              <div className="pt-3 md:pt-4 border-t border-stone-200 mt-8 md:mt-12">
+              {/* Divider */}
+              <div className="pt-8 border-t border-stone-200 mt-12">
+                {/* Start Over */}
                 <button
                   onClick={() => {
                     setHasStarted(false);
                     setHasSeenTutorial(false);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="text-stone-400 text-xs md:text-sm hover:text-stone-600 transition-all duration-500 tracking-widest uppercase border-b border-transparent hover:border-stone-300 pb-1"
+                  className="text-stone-400 text-xs hover:text-stone-600 transition-all duration-500 tracking-widest uppercase"
                 >
                   Start over
                 </button>
               </div>
 
               {/* Creator Credit */}
-              <div className="pt-6 md:pt-8 mt-2 md:mt-4 px-4">
+              <div className="pt-6">
                 <a
                   href="https://eliason.de"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-stone-400 text-xs hover:text-stone-600 transition-all duration-500 font-serif italic inline-block max-w-full break-words leading-relaxed"
+                  className="text-stone-400 text-xs hover:text-stone-600 transition-all duration-500 font-serif"
                 >
-                  If the weight feels different tomorrow, I'm here to help — Martin
+                  Created by Martin Eliason
                 </a>
               </div>
 
