@@ -48,7 +48,8 @@ const App: React.FC = () => {
             A gentle reminder
           </p>
           <p className="font-serif text-lg md:text-xl text-stone-500 leading-relaxed">
-            This is a quiet space created for you.<br className="hidden md:block"/> 
+            This is a quiet space created for you.{' '}
+            <br className="hidden md:block"/>
             Take 3 minutes to pause, breathe, and reset.
           </p>
         </div>
@@ -268,10 +269,14 @@ const App: React.FC = () => {
                 {/* Sharing Message */}
                 <div className="pt-2 md:pt-4 pb-2 md:pb-4 space-y-3 md:space-y-4">
                   <p className="text-stone-700 break-words">
-                    Sometimes we can't find<br className="hidden md:inline"/>the right words to help someone
+                    Sometimes we can't find{' '}
+                    <br className="hidden md:inline"/>
+                    the right words to help someone
                   </p>
                   <p className="text-stone-500 italic break-words">
-                    When you can't find the words,<br className="hidden md:inline"/>send them this instead
+                    When you can't find the words,{' '}
+                    <br className="hidden md:inline"/>
+                    send them this instead
                   </p>
                 </div>
 
