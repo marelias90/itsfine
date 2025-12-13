@@ -248,36 +248,36 @@ const App: React.FC = () => {
         </section>
 
         {/* Closing / Next Steps */}
-        <section className="h-screen w-full flex flex-col items-center justify-center snap-center shrink-0 px-6 relative">
+        <section className="h-screen w-full flex flex-col items-center justify-center snap-center shrink-0 px-4 md:px-6 relative">
           <FadeSection>
-            <div className="max-w-2xl text-center space-y-12">
-              
+            <div className="max-w-2xl text-center space-y-8 md:space-y-12 w-full">
+
               {/* Main Heading */}
-              <h2 className="font-serif text-4xl md:text-6xl text-stone-800 leading-tight mb-8">
+              <h2 className="font-serif text-3xl md:text-6xl text-stone-800 leading-tight mb-6 md:mb-8 px-2">
                 Come back whenever<br/>you need this
               </h2>
-              
+
               {/* Content Section */}
-              <div className="space-y-8 text-stone-600 font-serif text-lg md:text-xl leading-relaxed">
-                
+              <div className="space-y-6 md:space-y-8 text-stone-600 font-serif text-base md:text-xl leading-relaxed px-2">
+
                 {/* Bookmark Message */}
-                <p>
+                <p className="break-words">
                   Bookmark this page for rough days
                 </p>
-                
+
                 {/* Sharing Message */}
-                <div className="pt-4 pb-4 space-y-4">
-                  <p className="text-stone-700">
-                    Sometimes we can't find<br/>the right words to help someone
+                <div className="pt-2 md:pt-4 pb-2 md:pb-4 space-y-3 md:space-y-4">
+                  <p className="text-stone-700 break-words">
+                    Sometimes we can't find<br className="hidden md:inline"/>the right words to help someone
                   </p>
-                  <p className="text-stone-500 italic">
-                    When you can't find the words,<br/>send them this instead
+                  <p className="text-stone-500 italic break-words">
+                    When you can't find the words,<br className="hidden md:inline"/>send them this instead
                   </p>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-                  
+                <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center pt-2 md:pt-4 px-4">
+
                   {/* Copy Link Button */}
                   <button
                     onClick={() => {
@@ -285,11 +285,11 @@ const App: React.FC = () => {
                       setCopied(true);
                       setTimeout(() => setCopied(false), 2000);
                     }}
-                    className="px-6 py-3 rounded-full border border-stone-300 text-stone-600 font-serif text-base transition-all duration-700 hover:border-stone-400 hover:bg-stone-50"
+                    className="px-6 py-3 rounded-full border border-stone-300 text-stone-600 font-serif text-sm md:text-base transition-all duration-700 hover:border-stone-400 hover:bg-stone-50 whitespace-nowrap"
                   >
                     {copied ? 'Link copied' : 'Copy link'}
                   </button>
-                  
+
                   {/* Share Button */}
                   <button
                     onClick={() => {
@@ -301,7 +301,7 @@ const App: React.FC = () => {
                         });
                       }
                     }}
-                    className="px-6 py-3 rounded-full border border-stone-300 text-stone-600 font-serif text-base transition-all duration-700 hover:border-stone-400 hover:bg-stone-50"
+                    className="px-6 py-3 rounded-full border border-stone-300 text-stone-600 font-serif text-sm md:text-base transition-all duration-700 hover:border-stone-400 hover:bg-stone-50 whitespace-nowrap"
                   >
                     Share
                   </button>
@@ -309,26 +309,26 @@ const App: React.FC = () => {
               </div>
 
               {/* Start Over Link */}
-              <div className="pt-4 border-t border-stone-200 mt-12">
+              <div className="pt-3 md:pt-4 border-t border-stone-200 mt-8 md:mt-12">
                 <button
                   onClick={() => {
                     setHasStarted(false);
                     setHasSeenTutorial(false);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="text-stone-400 text-sm hover:text-stone-600 transition-all duration-500 tracking-widest uppercase border-b border-transparent hover:border-stone-300 pb-1"
+                  className="text-stone-400 text-xs md:text-sm hover:text-stone-600 transition-all duration-500 tracking-widest uppercase border-b border-transparent hover:border-stone-300 pb-1"
                 >
                   Start over
                 </button>
               </div>
 
               {/* Creator Credit */}
-              <div className="pt-8 mt-4">
+              <div className="pt-6 md:pt-8 mt-2 md:mt-4 px-4">
                 <a
                   href="https://eliason.de"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-stone-400 text-xs hover:text-stone-600 transition-all duration-500 font-serif italic"
+                  className="text-stone-400 text-xs hover:text-stone-600 transition-all duration-500 font-serif italic inline-block max-w-full break-words leading-relaxed"
                 >
                   If the weight feels different tomorrow, I'm here to help — Martin
                 </a>
